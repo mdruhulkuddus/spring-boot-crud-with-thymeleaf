@@ -6,6 +6,14 @@ import java.util.Date;
 
 public class StudentDto {
 
+    private Integer id;
+    public Integer getId() {
+        return id;
+    }
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     @NotEmpty(message = "The First Name is required")
     private String firstName;
     @NotEmpty(message = "The Last Name is required")

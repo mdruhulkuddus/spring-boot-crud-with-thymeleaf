@@ -1,6 +1,8 @@
 package com.example.crudthymeleaf.models;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
 
@@ -18,7 +20,14 @@ public class Student {
     private String email;
     private String address;
     private String status;
+
+    @Column(name="created_at", updatable = false)
+    @CreationTimestamp
     private Date createdAt;
+
+    @Column(name = "updated_at", updatable = false)
+    @UpdateTimestamp
+    private Date updatedAt;
 
     public int getId() {
         return id;
@@ -65,10 +74,6 @@ public class Student {
     public Date getCreatedAt() {
         return createdAt;
     }
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
     @Override
     public String toString() {
         return "Student{" +

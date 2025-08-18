@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
@@ -35,8 +36,8 @@ public class StudentController {
     }
 
     @PostMapping("/save")
-    public String saveStudent(@Valid @ModelAttribute("studentDto") StudentDto studentDto,  BindingResult bindingResult,  Model model) {
-        if(bindingResult.hasErrors()){
+    public String saveStudent(@Valid @ModelAttribute("studentDto") StudentDto studentDto,  BindingResult result,  Model model) {
+        if(result.hasErrors()){
             return "students/create";
         }
 
@@ -46,29 +47,78 @@ public class StudentController {
         student.setEmail(studentDto.getEmail());
         student.setAddress(studentDto.getAddress());
         student.setStatus(studentDto.getStatus());
-        student.setCreatedAt(studentDto.getCreatedAt());
-        studentRepository.save(student);
+
+        try {
+            studentRepository.save(student);
+        }catch (Exception e){
+            result.addError(
+                    new FieldError("studentDto", "email", studentDto.getEmail(), false, null, null,
+                            "Email address already exists")
+            );
+            return "students/create";
+        }
+
         return "redirect:/students";
     }
 
-//    @GetMapping("/edit")
-//    public String editStudent(Model model, @RequestParam int id) {
-//        Student student = studentRepository.findById(id).orElse(null);
-//        if(student == null){
-//            return "redirect:/students";
-//        }
-//
-//        StudentDto studentDto = new StudentDto();
-//        studentDto.setFirstName(student.getFirstName());
-//        studentDto.setLastName(student.getLastName());
-//        studentDto.setEmail(student.getEmail());
-//        studentDto.setAddress(student.getAddress());
-//        studentDto.setStatus(student.getStatus());
-//
-//        model.addAttribute("studentDto", studentDto);
-//        model.addAttribute("student", student);
-//
-//        return "students/edit";
-//    }
+    @GetMapping("/edit")
+    public String editStudent(Model model, @RequestParam int id) {
+        Student student = studentRepository.findById(id).orElse(null);
+        if(student == null){
+            return "redirect:/students";
+        }
 
+        StudentDto studentDto = new StudentDto();
+        studentDto.setFirstName(student.getFirstName());
+        studentDto.setLastName(student.getLastName());
+        studentDto.setEmail(student.getEmail());
+        studentDto.setAddress(student.getAddress());
+        studentDto.setStatus(student.getStatus());
+
+        model.addAttribute("student", student);
+        model.addAttribute("studentDto", studentDto);
+
+        return "students/edit";
+    }
+
+    @PostMapping("/update")
+    public String updateStudent(@Valid @ModelAttribute("studentDto") StudentDto studentDto,  BindingResult result,  Model model){
+
+        Student student = studentRepository.findById(studentDto.getId()).orElse(null);
+        if(student == null){
+            return "redirect:/students";
+        }
+
+        model.addAttribute("student", student);
+        if(result.hasErrors()){
+            return "students/edit";
+        }
+
+        student.setFirstName(studentDto.getFirstName());
+        student.setLastName(studentDto.getLastName());
+        student.setEmail(studentDto.getEmail());
+        student.setAddress(studentDto.getAddress());
+        student.setStatus(studentDto.getStatus());
+
+        try {
+            studentRepository.save(student);
+        }catch (Exception e){
+            result.addError(
+                    new FieldError("studentDto", "email", studentDto.getEmail(), false, null, null,
+                            "Email address already exists")
+            );
+            return "students/edit";
+        }
+
+        return "redirect:/students";
+    }
+
+    @GetMapping("delete")
+    public String deleteStudent(Model model, @RequestParam int id) {
+        Student student = studentRepository.findById(id).orElse(null);
+        if(student != null){
+            studentRepository.delete(student);
+        }
+        return "redirect:/students";
+    }
 }
