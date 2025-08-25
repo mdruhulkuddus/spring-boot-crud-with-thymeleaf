@@ -9,7 +9,7 @@ import org.springframework.context.ApplicationContext;
 public class CrudthymeleafApplication {
 
 	public static void main(String[] args) {
-//		SpringApplication.run(CrudthymeleafApplication.class, args);
+		SpringApplication.run(CrudthymeleafApplication.class, args);
 
 //		var orderService = new OrderService(new StripePaymentService());
 
@@ -17,9 +17,9 @@ public class CrudthymeleafApplication {
 //		var orderService = new OrderService();
 //		orderService.setPaymentService(new PaypalPaymentService());
 		// inversion of control
-		ApplicationContext context = SpringApplication.run(CrudthymeleafApplication.class, args);
-		var orderService = context.getBean(OrderService.class);
-		orderService.placeOrder();
+//		ApplicationContext context = SpringApplication.run(CrudthymeleafApplication.class, args);
+//		var orderService = context.getBean(OrderService.class);
+//		orderService.placeOrder();
 
 
 	}
